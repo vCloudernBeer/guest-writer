@@ -1,0 +1,90 @@
+---
+layout: post
+title: "gRPC – a modern communication protocol for Microservices"
+description: "Microservices is being a very popular application deployment method. One of the inherit requirement of Microservices is efficient communication between the individual elements. "
+date: "2018-03-06 08:30"
+author:
+  name: "Anthony Chow"
+  url: "brunoskrebs"
+  mail: "vCloudernBeer@gmail.com"
+  avatar: "https://twitter.com/vCloudernBeer/profile_image?size=original"
+related:
+- 2017-11-15-an-example-of-all-possible-elements
+---
+
+**TL;DR:** Briefly describe what this article is about and what the reader will achieve/learn after reading it. Please,
+also provide the link to a GitHub repository that contains code related to this article.
+# gRPC - a Modern Communication Protocol for Microservices
+## Introduction
+
+Microservices is being a very popular application deployment method. One of the inherit requirement of Microservices is efficient communication between the individual elements.
+Google had been a pioneer in using containers to support its different applications/features. Within Google the container orchestration engine Borg is out sourced as Kubernetes.
+Another not so well-known interprocess communication tool is Stubby is being out sourced as [gRPC](https://grpc.io/).
+
+## What is gRPC?
+gRPC can be summarized as ***protocol buffers running over HTTP/2 with multiple programming language support***.  This [website](http://www.grpc.io/docs/) has a good overview on gRPC with [FAQ](http://www.grpc.io/faq/) and [quick start](http://www.grpc.io/docs/quickstart/).
+
+gRPC client can make a **remote procedure call** to the gRPC server as if the server a local function.
+
+## Protocol Bufffer
+
+[Protocol buffer](https://developers.google.com/protocol-buffers/) (a.k.a protobuf) is one form of [Interface Definition Language](http://whatis.techtarget.com/definition/IDL-interface-definition-language) for structured data serialization and de-serialization between two parties and are transmitted over a network in binary forms with the characteristics of being flexible and efficient. This is why gRPC is also flexible and efficient. Structured data are defined in human readable format and are transferred over the wire in binary format.  File with the structured data has the extension or .proto.  Example taken from the Google developer web site for a structured data:
+
+message Person {
+
+    required string name = 1;
+    required int32 id = 2;
+    optional string email = 3;
+}
+
+The protobuf compile is able to generated programming language specific stubs for client and server to invoke for messages exchange.
+
+This [page](https://github.com/google/protobuf) detail the protobuf compiler and runtime for different popular programming languages such as Java, Python, Go JavaScript and so on. It also has a link on quick start guide for using protobuf
+
+## HTTP/2
+
+Hypertext Transfer Protocol Version 2 ([HTTP/2](https://developers.google.com/web/fundamentals/performance/http2/)) is defined by [RFC 7540](https://tools.ietf.org/pdf/rfc7540.pdf) aimed at providing better performance for HTTP traffics with bi-directional streaming and flow control on a single TCP connection.
+This [website](http://www.http2demo.io/) demonstrates the performance difference between HTTP and HTTP/2.
+
+### Multiplexing
+Multiple gRPC connections can be established over a single TCP/IP connection and thus reduce the TCP connect and disconnect overhead what needs to be done on HTTP/1.
+
+### Bi-directional streaming
+HTTP/2 has bi-directional streaming built-in allowing gRPC to support streaming from client, streaming from server or in both directions which can greatly improve the transmission of data over HTTP flow.
+
+## Multiple programming language support
+gRPC has a command line compiler to generate stubs and code in different languages that can be used for the gRPC client and server. This feature facilitates the gRPC code to be up and running rapidly.
+![alt text](./multi-lang_support.jpg)
+
+**Image source**: Google gRPC meetup kit
+
+## Advantage of using gRPC
+In a microservices environment, individual service can be written in different programming languages and gRPC’s multi-language allow developer to simply define the rules for the communication and do not have worried about making networking calls between the services.
+Another advantage of using gRPC is that this is battle tested in Google’s data center.  A Google developer advocate stated that at Google 10,000,000,000 gRPC calls are made in a second with very low latency and jitter rate.
+
+## Getting started with gRPC
+This [web site](https://grpc.io/docs/quickstart/) has a good getting started guide for gRPC in different languages.  We you want to look at the source code [here](https://github.com/grpc/grpc) and this has good example code that we can follow. The code for go gRPC is [here](https://github.com/grpc/grpc-go) and for Java [here](https://github.com/grpc/grpc-go).
+Getting start with gRPC can be as simple as in the following 4 steps:
+1. Define the gRPC service and the method request and response types using protocol buffers
+2. Generate the gRPC client and server interfaces from your .proto service definition.
+3. Create the server
+4. Create the client
+
+## Built-in authentication method in gRPC
+Microservices is a new way of deliver software features. It also introduce new security concerns as the traditional firewall is not suited to secure Microservices. gRPC has built-in security to augment this need.
+Before getting into the built-in authentication methods, we need the difference between authentication and authorization.
+Authentication is the process to determine who you claim to be by the credential you provide. Credential can be of 3 types:
+* Something you have – smart token device
+* Something you know - password
+* Something you are – fingerprint
+
+Authorization is the process that based on user credential grant access to resource. Access type can be:
+* Read-Write
+* Read only
+* Delete
+
+## Built-in Authentication method for grpc
+
+There are 3 built-in authentication methods for gRPC. The first one is digital certificate-based SSL/TLS, while the second one is the Token-based authentication with Google which can further divided into JWT (JASON Web Token) and OAuth Access Token. The last method is the credential plugin API that allows developers to plug in their own type of credentials.
+
+Credentials used in gRPC can be further divided into **channel credential** and **call credential**. Communication between gRPC entities is via a channel. The channel credential is used to secure the channels between the 2 parties. Call credentials is used for each gRPC call such that the gRPC server can determine if the calling gRPC client has the proper credential to person the desired action.
